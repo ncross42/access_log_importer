@@ -17,6 +17,7 @@ var glob     = require("glob"),  // github.com/isaacs/node-glob.git
     mysql    = require('mysql');
 
 var con = mysql.createConnection({
+  socketPath : '/var/run/mysqld/mysqld.sock',
   host     : 'localhost',
   user     : '',
   password : '',
@@ -26,14 +27,12 @@ var con = mysql.createConnection({
 con.connect(function(err) {
   if (err) {
     console.error('error connecting: ' + err.stack);
-    process.exit();
     return;
   }
-  console.log('connected as id ' + connection.threadId);
+  console.log('connected as id ' + con.threadId);
   con.query('SET sql_log_bin = 0; /*LOCK TABLE access_logs WRITE;*/');
 });
 
-return;
 var sql = 'INSERT INTO access_logs_myisam ( \
 	host, ip, dt, method, req, protocol, code, byte, ref, ua, req_dir, req_base, req_query, req_frag, ref_host, ref_path, ref_query, ua_fam_maj, ua_full, os_fam_maj, os_full, dev_full \
 ) VALUES ( \
@@ -43,7 +42,7 @@ var sql = 'INSERT INTO access_logs_myisam ( \
 // analyze
 var re = /([(\d\.)]+) - - \[(.*?)\] "([^\s]*?) ([^\s]*?) ([^\s]*?)" (\d+) (-|\d+) "(-|.*?)" "(.*?)"/i;
 var analyze_line = function (host,line) {
-  console.log(line);
+  //console.log(line);
   var found = line.match(re);
   var param = found.slice(0);
   //console.log( found.length );
@@ -74,7 +73,6 @@ var analyze_line = function (host,line) {
 
     // Parse everything
     var objUA = uap.parse(found[9]);
-    console.log(objUA);
     param[17] = objUA.ua.family + (null==objUA.ua.major ? '' : ' '+objUA.ua.major);
     param[18] = param[17] + (null==objUA.ua.minor ? '' : '.'+objUA.ua.minor) +(null==objUA.ua.patch ? '' : '.'+objUA.ua.patch);
     param[19] = objUA.os.family + (null==objUA.os.major ? '' : ' '+objUA.os.major);
@@ -101,12 +99,15 @@ glob("../../access/183.110.11.212*2017010400*-access_log", {}, function (er, fil
       terminal: false
     });
 
+    var i = 0;
     rd.on('line', function(line) {
       analyze_line(host,line);
-      console.log( "process.memoryUsage().rss : " + new Intl.NumberFormat().format(process.memoryUsage().rss - _proc_mem.rss) );
-      console.log( "process.memoryUsage().headUsed : " + new Intl.NumberFormat().format(process.memoryUsage().heapUsed - _proc_mem.heapUsed) );
-      //process.exit();
+      if ( 0 == (++i%1000) ) {
+        console.log(i);
+      }
     });
+    console.log( "process.memoryUsage().rss : " + new Intl.NumberFormat().format(process.memoryUsage().rss - _proc_mem.rss) );
+    console.log( "process.memoryUsage().headUsed : " + new Intl.NumberFormat().format(process.memoryUsage().heapUsed - _proc_mem.heapUsed) );
   });
 });
 
