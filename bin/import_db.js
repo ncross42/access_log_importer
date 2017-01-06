@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+
 'usr strict';
 
 var microtime = function () {
@@ -16,42 +17,82 @@ var glob     = require("glob"),  // github.com/isaacs/node-glob.git
     uap      = require('node-uap'),
     mysql    = require('mysql');
 
-var con = mysql.createConnection({
+var connection = mysql.createConnection({
   socketPath : '/var/run/mysqld/mysqld.sock',
-  host     : 'localhost',
-  user     : '',
-  password : '',
-  database : ''
+  host       : 'localhost',
+  user       : 'root',
+  password   : '',
+  database   : ''
+  //,debug    : true//;['ComQueryPacket', 'RowDataPacket']
 });
 
-con.connect(function(err) {
-  if (err) {
-    console.error('error connecting: ' + err.stack);
-    return;
+connection.connect(function(err){
+  if(err) {
+    console.log("Error connecting database ...");    
+    console.error(err);
+  } else {
+    console.log('mysql connected as id ' + connection.threadId);
+    glob_file();
   }
-  console.log('connected as id ' + con.threadId);
-  con.query('SET sql_log_bin = 0; /*LOCK TABLE access_logs WRITE;*/');
 });
+connection.query('SET sql_log_bin = 0; /*LOCK TABLE access_logs WRITE;*/');
 
+var i=0, rd_close=false;
+var glob_file = function () { //{{{
+  // search and list files
+  glob("../../access/183.110.11.212*2017010500*-access_log", {}, function (err, files) {
+    files.forEach( function (file) {
+      console.log(file);
+      var basename = file.substr( 1+file.lastIndexOf('/'));
+      var host = basename.substr(0, basename.indexOf('-') );
+      var rs = fs.createReadStream(file);
+      rs.on('end', function () {
+        rd_close = true;
+        console.log('All the data in the file has been read');
+        if ( global.gc ) {
+          global.gc();
+          console.log('garbage collected');
+        }
+      })
+      var rd = readline.createInterface({
+        input: rs/*,
+        output: process.stdout,
+        terminal: false,
+        historySize: 0*/
+      });
+
+      rd.on('line', function(line) {
+        ++i;
+        //console.log('i:'+i);
+        //if ( 0 == (i%5000) ) {
+        //  console.log( "rd_line : "+i);
+        //  console.log( "process.memoryUsage().rss : " + new Intl.NumberFormat().format(process.memoryUsage().rss - _proc_mem.rss) );
+        //  console.log( "process.memoryUsage().headUsed : " + new Intl.NumberFormat().format(process.memoryUsage().heapUsed - _proc_mem.heapUsed) );
+        //}
+        //console.log(line);
+        analyze_line(line,host);
+      });
+    });
+  });
+} //}}}
+
+// analyze
 var sql = 'INSERT INTO access_logs_myisam ( \
 	host, ip, dt, method, req, protocol, code, byte, ref, ua, req_dir, req_base, req_query, req_frag, ref_host, ref_path, ref_query, ua_fam_maj, ua_full, os_fam_maj, os_full, dev_full \
 ) VALUES ( \
 		 ?,  ?,  ?,      ?,   ?,        ?,    ?,    ?,   ?,  ?,       ?,        ?,         ?,        ?,        ?,        ?,         ?,          ?,       ?,          ?,       ?,        ? \
 )';
-
-// analyze
-var re = /([(\d\.)]+) - - \[(.*?)\] "([^\s]*?) ([^\s]*?) ([^\s]*?)" (\d+) (-|\d+) "(-|.*?)" "(.*?)"/i;
-var analyze_line = function (host,line) {
-  //console.log(line);
+var re = /([(\d\.)]+) - - \[(.*?)\] "([^\s]*?) ([^\s]*?) ([^\s]*?)" (\d+) (-|\d+) "(-|.*?)" "(.*?)"/;
+var j=0, k=0;
+var analyze_line = function (line,host) { //{{{
   var found = line.match(re);
-  var param = found.slice(0);
-  //console.log( found.length );
-  if ( 10 <= found.length ) {
+  if ( found!==null && 10 <= found.length ) {
+    var param = found.slice(0);
     param[0] = host;
     //param[1] = remote   = found[1];
     var d = found[2].substr(0, found[2].indexOf(':'));
-    var t = found[2].substr(1+found[2].indexOf(':'));
-    param[2] = dt       = new Date(Date.parse(d+' '+t)).toISOString();
+    var t = found[2].substring( 1+found[2].indexOf(':'), found[2].indexOf('+') );
+    param[2] = dt = new Date(Date.parse(d+' '+t+'UTC')).toISOString().substr(0,19).replace('T',' ');
     //param[3] = method   = found[3];
     //param[4] = req      = found[4];
     //param[5] = protocol = found[5];
@@ -79,36 +120,28 @@ var analyze_line = function (host,line) {
     param[20] = param[19] + (null==objUA.os.minor ? '' : '.'+objUA.os.minor) +(null==objUA.os.patch ? '' : '.'+objUA.os.patch);
     param[21] = objUA.device.family + (null==objUA.device.brand ? '' : ' '+objUA.device.brand) +(null==objUA.device.model ? '' : ' '+objUA.device.model);
 
-    con.query(sql,param, function(err,results) {
-      console.log( 'FAILED : '+util.inspect(err) );
-    });
-  }
+    connection.query(sql,param, function(err,result) {
+      ++j;
+      //console.log('j:'+j);
+      //if ( 0 == (j%5000) ) {
+      //  console.log( "query: "+j+", skip: "+k );
+      //  console.log( "process.memoryUsage().rss : " + new Intl.NumberFormat().format(process.memoryUsage().rss - _proc_mem.rss) );
+      //  console.log( "process.memoryUsage().headUsed : " + new Intl.NumberFormat().format(process.memoryUsage().heapUsed - _proc_mem.heapUsed) );
+      //}
 
-  //console.log( util.inspect(found) );
-  //console.log( util.inspect(param) );
-}
-
-// search and list files
-glob("../../access/183.110.11.212*2017010400*-access_log", {}, function (er, files) {
-  files.forEach( function (file) {
-    var basename = file.substr( 1+file.lastIndexOf('/'));
-    var host = basename.substr(0, basename.indexOf('-') );
-    var rd = readline.createInterface({
-      input: fs.createReadStream(file),
-      output: process.stdout,
-      terminal: false
-    });
-
-    var i = 0;
-    rd.on('line', function(line) {
-      analyze_line(host,line);
-      if ( 0 == (++i%1000) ) {
-        console.log(i);
+      if ( err ) {
+        console.log(line);
+        console.log( 'FAILED : '+util.inspect(err) + "\n\tresults : " + util.inspect(result)+ "\n\tparam : " + util.inspect(param) );
+        process.exit();
+      } else if ( rd_close && i == (j+k) ) {
+        console.log('connection.end');
+        connection.end();
       }
     });
-    console.log( "process.memoryUsage().rss : " + new Intl.NumberFormat().format(process.memoryUsage().rss - _proc_mem.rss) );
-    console.log( "process.memoryUsage().headUsed : " + new Intl.NumberFormat().format(process.memoryUsage().heapUsed - _proc_mem.heapUsed) );
-  });
-});
-
-//con.end();
+  } else {
+    ++k;
+    console.log('k:'+k);
+    console.log(line);
+    console.log('failed to parse req_url : '+line);
+  }
+} //}}}
