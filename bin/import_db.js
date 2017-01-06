@@ -40,7 +40,7 @@ connection.query('SET sql_log_bin = 0; /*LOCK TABLE access_logs WRITE;*/');
 var i=0, rd_close=false;
 var glob_file = function () { //{{{
   // search and list files
-  glob("../../access/183.110.11.212*2017010500*-access_log", {}, function (err, files) {
+  glob("../../access/*2017010500*-access_log", {}, function (err, files) {
     files.forEach( function (file) {
       console.log(file);
       var basename = file.substr( 1+file.lastIndexOf('/'));
