@@ -1,0 +1,11 @@
+[path]
+file_pattern =
+error_log =
+
+[db]
+host = localhost
+port = 3306
+socket = 
+user = 
+password =
+schema = 
