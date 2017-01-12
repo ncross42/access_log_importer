@@ -6,15 +6,13 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var fs = require('fs');
 
-
 var index = require('./routes/index');
 var users = require('./routes/users');
 
 var app = express();
 
-// morgan logger
+// setup morgan logger, ensure log directory exists
 var logDirectory = path.join(__dirname, 'log')
-// ensure log directory exists
 fs.existsSync(logDirectory) || fs.mkdirSync(logDirectory)
 // create a rotating write stream
 var accessLogStream = require('file-stream-rotator').getStream({
@@ -23,7 +21,6 @@ var accessLogStream = require('file-stream-rotator').getStream({
   frequency: '1h',
   verbose: false
 })
-// setup the logger
 app.use(morgan('combined', {stream: accessLogStream}))
 
 // view engine setup

@@ -1,0 +1,19 @@
+{
+  "Importer":{
+    "file_pattern":"",
+    "error_log":"../log/"
+  },
+  "DB": {
+    "mysql": {
+      "host": "localhost",
+      "port": 3306,
+      "user": "root",
+      "pass": 5984,
+      "dbName": ""
+    },
+    "influxdb": {
+      "host": "localhost",
+      "port": 8086
+    }
+  }
+}

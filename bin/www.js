@@ -5,7 +5,7 @@
  */
 
 var app = require('../app');
-var debug = require('debug')('node-loganalyzer:server');
+var debug = require('debug')('logalyzer:server');
 var http = require('http');
 
 /**
