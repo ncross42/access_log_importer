@@ -5,9 +5,23 @@ var morgan = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var fs = require('fs');
+var mysql = require('mysql');
+var config = require('config');
+var dbConfig = config.get('mysql');
+
+var mycon = mysql.createConnection(dbConfig);
+mycon.connect(function(err) {
+  if (err) {
+    console.error('mysql connection error');
+    console.error(err);
+    throw err;
+  }
+});
 
 var index = require('./routes/index');
 var users = require('./routes/users');
+var summary = require('./routes/summary');
+var compare = require('./routes/compare');
 
 var app = express();
 
@@ -37,6 +51,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', index);
 app.use('/users', users);
+app.use('/summary', summary);
+app.use('/compare', compare);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

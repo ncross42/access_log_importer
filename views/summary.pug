@@ -1,0 +1,88 @@
+extends layout
+
+block content
+  h1= title
+  p Welcome to #{title}
+
+  div.well.well-sm
+    form.form-inline(name="date_range", method="get")
+      div.form-group.well.well-sm
+        label.radio-inline
+          input(type="radio",name="basis",checked=basis=="daily")
+          | 일간
+        label.radio-inline
+          input(type="radio",name="basis",checked=basis=="weekly")
+          | 주간
+        label.radio-inline
+          input(type="radio",name="basis",checked=basis=="monthy")
+          | 월간
+        label.radio-inline
+          input(type="radio",name="basis",checked=basis=="yearly")
+          | 년간
+      div.form-group
+        span(style={'padding-left':'10px','padding-right':'10px','font-size':'1.0em','font-weight':'bold'}) 기간
+        input.datepicker(type="text", name="start", style={'width':'100px'}, value=start)
+        span(style={'padding-left':'10px','padding-right':'10px','font-size':'1.0em','font-weight':'bold'}) ~
+        input.datepicker(type="text", name="end", style={'width':'100px'}, value=end)
+      input.btn.btn-default(type="submit", value="검색",style={'margin-left':'10px'})
+
+  div#container(style={width:'100%', height:'400px'}) bbb
+
+  script.
+    $(document).ready(function() {
+      $( ".datepicker" ).datepicker({
+        changeMonth: true,
+        changeYear: true
+      });
+      var options = {
+        chart: {
+          renderTo: 'container',
+          type: 'spline'
+        },
+        title: {
+          text: '곰제품 기간별 비교표'
+        },
+        xAxis: {
+          title: { text: '기간' }
+        },
+        yAxis: {
+          title: { text: 'Fruit eaten' },
+          categories: ['w', 't', 'f']
+        },
+        series: [{}]
+      };
+      $.getJSON('/summary/data', function(data) {
+        options.series[0].data = data;
+        var chart = new Highcharts.Chart(options);
+      });
+    });
+
+    /*$(function () { 
+      var myChart = Highcharts.chart('container', {
+        chart: {
+          renderTo: 'container',
+          defaultSeriesType: 'spline',
+          events: {
+            load: requestData
+          }
+        },
+        title: {
+          text: 'Fruit Consumption'
+        },
+        xAxis: {
+          categories: ['Apples', 'Bananas', 'Oranges']
+        },
+        yAxis: {
+          title: {
+            text: 'Fruit eaten'
+          }
+        },
+        series: [{
+            name: 'Jane',
+            data: [1, 0, 4]
+          }, {
+            name: 'John',
+            data: [5, 7, 3]
+        }]
+      });
+    });*/
