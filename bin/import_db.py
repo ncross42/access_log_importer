@@ -3,6 +3,11 @@ import glob, os, mysql.connector, re, datetime
 from mysql.connector import errorcode
 from urlparse import urlparse
 from ua_parser import user_agent_parser
+import GeoIP
+
+gi = GeoIP.new(GeoIP.GEOIP_MEMORY_CACHE)
+print(gi.country_code_by_addr("24.24.24.24"))
+print(gi.country_name_by_addr("24.24.24.24"))
 
 config = {
   'unix_socket' : '/var/run/mysqld/mysqld.sock',

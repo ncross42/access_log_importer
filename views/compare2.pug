@@ -1,0 +1,123 @@
+extends layout
+
+block content
+  h1
+    a(href="/compare", style={'text-decoration':'none'})= title
+
+  div.well.well-sm
+    form.form-inline(name="formCompare", method="get")
+      //div.form-group.well.well-sm
+        label.radio-inline
+          input(type="radio",name="basis",value="daily",checked=basis=="daily")
+          | 일간
+        label.radio-inline
+          input(type="radio",name="basis",value="weekly",checked=basis=="weekly")
+          | 주간
+        label.radio-inline
+          input(type="radio",name="basis",value="monthy",checked=basis=="monthy")
+          | 월간
+      div.form-group
+        span(style={'padding-left':'10px','padding-right':'10px','font-size':'1.0em','font-weight':'bold'}) 기간
+        input(id="textStart",type="date", name="start", style={'width':'140px'}, value=start)
+        span(style={'padding-left':'10px','padding-right':'10px','font-size':'1.0em','font-weight':'bold'}) ~
+        input(id="textEnd",type="date", name="end", style={'width':'140px'}, value=end)
+      input.btn.btn-default(id="btnSubmit", type="button", value="검색",style={'margin-left':'10px'})
+
+  style.
+    .summary th {
+      text-align: center;
+    }
+    .summary td {
+      text-align: right;
+    }
+
+  div#div_player
+    h2 곰플레이어
+    table.table.table-bordered.table-hover.summary
+      thead
+        tr
+          th 년도
+          th 일평균 다운로드
+          th 일평균 삭제
+          th 삭제율
+          th 기간누적 다운로드
+          th 기간누적 삭제
+      tbody
+    div#chart_player
+
+  div#div_audio
+    h2 곰오디오
+    table.table.table-bordered.table-hover.summary
+      thead
+        tr
+          th 년도
+          th 일평균 다운로드
+          th 일평균 삭제
+          th 삭제율
+          th 기간누적 다운로드
+          th 기간누적 삭제
+      tbody
+    div#chart_audio
+
+  script.
+    function reload_chart(product,x_categories, series) {
+      let options = {
+        chart: { renderTo: 'chart_'+product, type: 'spline' },
+        title: { text: '곰'+product+' 연간 비교표' },
+        xAxis: { title: { text: '기간' }, categories: x_categories },
+        yAxis: { title: { text: 'Fruit eaten' }, },
+        series: series
+      };
+      new Highcharts.Chart(options);
+    }
+
+    /* summary = {
+      player: {
+        2015: { download: 1352850, uninstall: 50678 },
+        2016: { download: 1277316, uninstall: 46763 }
+      },
+      audio: {
+        2015: { download: 178187, uninstall: 25955 },
+        2016: { download: 162452, uninstall: 20701 } 
+      }
+    } */
+    function reload_table(product, date_len, summary ) {
+      let $tbody = document.querySelector('#div_'+product+' tbody');
+      $tbody.innerHTML = null;  // reset
+      let html = '';
+      for ( let [year, stats] of Object.entries(summary) ) {
+        html += '<tr><td>'+year+'</td>';
+        html += '<td>'+(stats.download/date_len).toLocaleString('arab',{maximumFractionDigits:1})+'</td>';
+        html += '<td>'+(stats.uninstall/date_len).toLocaleString('arab',{maximumFractionDigits:1})+'</td>';
+        html += '<td>'+(100*stats.uninstall/stats.download).toLocaleString('arab',{maximumFractionDigits:1})+'</td>';
+        html += '<td>'+(stats.download).toLocaleString()+'</td>';
+        html += '<td>'+(stats.uninstall).toLocaleString()+'</td>';
+        html += '</tr>';
+      }
+      $tbody.insertAdjacentHTML('afterbegin', html);
+    }
+
+    var reload_page = function() {
+      const start = document.querySelector('#textStart').value;
+      const end = document.querySelector('#textEnd').value;
+      const url = '/compare2/data/daily/'+start+'/'+end;
+      fetch(url).then(r => r.json())
+        .then(data => {
+          for ( let [product, series] of Object.entries(data.prod_series) ) {
+            reload_chart(product,data.x_categories,series);
+          }
+          const date_len = data.x_categories.length;
+          for ( let [product, summary] of Object.entries(data.prod_summary) ) {
+            reload_table(product, date_len, summary);
+          }
+        })
+        .catch(e => console.log("Booo"));
+    }
+
+    document.querySelector('#btnSubmit')
+      .addEventListener( 'click', e => {
+      reload_page();
+      e.preventDefault();
+    });
+
+    document.addEventListener("DOMContentLoaded", ()=>reload_page() );
