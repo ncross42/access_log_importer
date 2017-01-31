@@ -65,7 +65,6 @@ router.get(['/data','/data/:basis/:start/:end'], function(req, res, next) {
   // xAxis.categories = [/*'12-30','12-31','01-01','01-02'*/];
   const date_list = getDates( new Date(start), new Date(end) ); 
 // console.log( date_list );
-  var series_keys = []; /*'2017-download', ... , '2016-install'*/
   var series = {};
    /*{ player : [
          { name: '2017-download', data: [7.0, 6.9, 9.5, 14.5] },
@@ -99,28 +98,19 @@ router.get(['/data','/data/:basis/:start/:end'], function(req, res, next) {
           return;
         }
 
-        if ( ! series[r.product] ) series[r.product] = [];
+        if ( ! series[r.product] ) series[r.product] = {};
 
         const year = r.d.substr(0,4);
         const series_name = year+'-'+r.action;
-        var s_key = series_keys.indexOf(series_name);
-        if ( s_key == -1 ) {
-          series[r.product].push({
+        if ( ! series[r.product][series_name] ) {
+          series[r.product][series_name] = {
             name : series_name,
             data : Array(date_list.length).fill(0)
-          });
-          s_key = series[r.product].length - 1;
-          series_keys.push(series_name);
-        } else if ( ! series[r.product][s_key] ) {
-          series[r.product].push({
-            name : series_name,
-            data : Array(date_list.length).fill(0)
-          });
-          s_key = series[r.product].length - 1;
+          };
         }
 
         // for graph
-        series[r.product][s_key].data[d_key] = r.pv;
+        series[r.product][series_name].data[d_key] = r.pv;
 
         // for summary
         if ( ! summary[r.product] ) summary[r.product] = {};
@@ -133,7 +123,6 @@ router.get(['/data','/data/:basis/:start/:end'], function(req, res, next) {
 
       tasksToGo--;
       if ( ! tasksToGo ) {
-// console.log( series_keys );
         res.json( {
           'x_categories' : date_list,
           'prod_series' : series,

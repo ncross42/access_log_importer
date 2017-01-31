@@ -24,6 +24,27 @@ block content
       input.btn.btn-default(id="btnSubmit", type="button", value="검색",style={'margin-left':'10px'})
 
   style.
+    div.panel { margin-bottom: 10px; }
+    h2.panel-heading {
+      margin-top: 0;
+      margin-bottom: 0;
+      padding-left: 5px;
+      padding-right: 5px;
+      padding-top: 5px;
+      padding-bottom: 5px;
+    }
+    h2.panel-heading:hover {
+      cursor: pointer;
+    }
+    h2.panel-heading:hover span {
+      text-decoration: underline;
+    }
+    h2.panel-heading:before {
+      font-family:'Glyphicons Halflings';
+    }
+    h2.panel-heading:before  { content:"\e114"; }
+    h2.panel-heading.collapsed:before { content:"\e080"; }
+
     .summary th {
       text-align: center;
     }
@@ -31,8 +52,8 @@ block content
       text-align: right;
     }
 
-  div#div_player
-    h2 곰플레이어
+  div.panel.panel-default#div_player
+    h2.panel-heading(data-toggle="collapse",data-target="#chart_player") 곰player
     table.table.table-bordered.table-hover.summary
       thead
         tr
@@ -43,10 +64,10 @@ block content
           th 기간누적 다운로드
           th 기간누적 삭제
       tbody
-    div#chart_player
+    div.collapse.in#chart_player
 
-  div#div_audio
-    h2 곰오디오
+  div.panel.panel-default#div_audio
+    h2.panel-heading(data-toggle="collapse",data-target="#chart_audio") 곰audio
     table.table.table-bordered.table-hover.summary
       thead
         tr
@@ -57,10 +78,10 @@ block content
           th 기간누적 다운로드
           th 기간누적 삭제
       tbody
-    div#chart_audio
+    div.collapse.in#chart_audio
 
-  div#div_tv
-    h2 곰오디오
+  div.panel.panel-default#div_tv
+    h2.panel-heading(data-toggle="collapse",data-target="#chart_tv") 곰tv
     table.table.table-bordered.table-hover.summary
       thead
         tr
@@ -71,10 +92,10 @@ block content
           th 기간누적 다운로드
           th 기간누적 삭제
       tbody
-    div#chart_tv
+    div.collapse.in#chart_tv
 
-  div#div_pack
-    h2 곰오디오
+  div.panel.panel-default#div_pack
+    h2.panel-heading(data-toggle="collapse",data-target="#chart_pack") 곰pack
     table.table.table-bordered.table-hover.summary
       thead
         tr
@@ -85,10 +106,10 @@ block content
           th 기간누적 다운로드
           th 기간누적 삭제
       tbody
-    div#chart_pack
+    div.collapse.in#chart_pack
 
-  div#div_recoder
-    h2 곰오디오
+  div.panel.panel-default#div_recoder
+    h2.panel-heading(data-toggle="collapse",data-target="#chart_recoder") 곰recoder
     table.table.table-bordered.table-hover.summary
       thead
         tr
@@ -99,10 +120,10 @@ block content
           th 기간누적 다운로드
           th 기간누적 삭제
       tbody
-    div#chart_recoder
+    div.collapse.in#chart_recoder
 
-  div#div_encoder
-    h2 곰오디오
+  div.panel.panel-default#div_encoder
+    h2.panel-heading(data-toggle="collapse",data-target="#chart_encoder") 곰encoder
     table.table.table-bordered.table-hover.summary
       thead
         tr
@@ -113,10 +134,10 @@ block content
           th 기간누적 다운로드
           th 기간누적 삭제
       tbody
-    div#chart_encoder
+    div.collapse.in#chart_encoder
 
-  div#div_studio
-    h2 곰오디오
+  div.panel.panel-default#div_studio
+    h2.panel-heading(data-toggle="collapse",data-target="#chart_studio") 곰studio
     table.table.table-bordered.table-hover.summary
       thead
         tr
@@ -127,10 +148,10 @@ block content
           th 기간누적 다운로드
           th 기간누적 삭제
       tbody
-    div#chart_studio
+    div.collapse.in#chart_studio
 
-  div#div_mix
-    h2 곰오디오
+  div.panel.panel-default#div_mix
+    h2.panel-heading(data-toggle="collapse",data-target="#chart_mix") 곰mix
     table.table.table-bordered.table-hover.summary
       thead
         tr
@@ -141,10 +162,10 @@ block content
           th 기간누적 다운로드
           th 기간누적 삭제
       tbody
-    div#chart_mix
+    div.collapse.in#chart_mix
 
-  div#div_anti
-    h2 곰오디오
+  div.panel.panel-default#div_anti
+    h2.panel-heading(data-toggle="collapse",data-target="#chart_anti") 곰anti
     table.table.table-bordered.table-hover.summary
       thead
         tr
@@ -155,10 +176,10 @@ block content
           th 기간누적 다운로드
           th 기간누적 삭제
       tbody
-    div#chart_anti
+    div.collapse.in#chart_anti
 
-  div#div_bridge
-    h2 곰오디오
+  div.panel.panel-default#div_bridge
+    h2.panel-heading(data-toggle="collapse",data-target="#chart_bridge") 곰bridge
     table.table.table-bordered.table-hover.summary
       thead
         tr
@@ -169,10 +190,10 @@ block content
           th 기간누적 다운로드
           th 기간누적 삭제
       tbody
-    div#chart_bridge
+    div.collapse.in#chart_bridge
 
-  div#div_helper
-    h2 곰오디오
+  div.panel.panel-default#div_helper
+    h2.panel-heading(data-toggle="collapse",data-target="#chart_helper") 곰helper
     table.table.table-bordered.table-hover.summary
       thead
         tr
@@ -183,7 +204,7 @@ block content
           th 기간누적 다운로드
           th 기간누적 삭제
       tbody
-    div#chart_helper
+    div.collapse.in#chart_helper
 
   script.
     function reload_chart(product,x_categories, series) {
@@ -213,11 +234,11 @@ block content
       let html = '';
       for ( let [year, stats] of Object.entries(summary) ) {
         html += '<tr><td>'+year+'</td>';
-        html += '<td>'+(stats.download/date_len).toLocaleString('arab',{maximumFractionDigits:1})+'</td>';
-        html += '<td>'+(stats.uninstall/date_len).toLocaleString('arab',{maximumFractionDigits:1})+'</td>';
-        html += '<td>'+(100*stats.uninstall/stats.download).toLocaleString('arab',{maximumFractionDigits:1})+'</td>';
-        html += '<td>'+(stats.download).toLocaleString()+'</td>';
-        html += '<td>'+(stats.uninstall).toLocaleString()+'</td>';
+        html += '<td>'+(stats.download||0/date_len).toLocaleString('arab',{maximumFractionDigits:1})+'</td>';
+        html += '<td>'+(stats.uninstall||0/date_len).toLocaleString('arab',{maximumFractionDigits:1})+'</td>';
+        html += '<td>'+(100*(stats.uninstall||0)/(stats.download||0)).toLocaleString('arab',{maximumFractionDigits:1})+'</td>';
+        html += '<td>'+(stats.download||0).toLocaleString()+'</td>';
+        html += '<td>'+(stats.uninstall||0).toLocaleString()+'</td>';
         html += '</tr>';
       }
       $tbody.insertAdjacentHTML('afterbegin', html);
@@ -231,7 +252,7 @@ block content
         .then(data => {
           for ( let [product, series] of Object.entries(data.prod_series) ) {
             if ( document.querySelector('#div_'+product) ) {
-              reload_chart(product,data.x_categories,series);
+              reload_chart(product,data.x_categories,Object.values(series));
             }
           }
           const date_len = data.x_categories.length;
