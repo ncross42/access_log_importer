@@ -22,14 +22,16 @@ block content
         span(style={'padding-left':'10px','padding-right':'10px','font-size':'1.0em','font-weight':'bold'}) ~
         input(id="textEnd",type="date", name="end", style={'width':'140px'}, value=end)
       input.btn.btn-default(id="btnSubmit", type="button", value="검색",style={'margin-left':'10px'})
+      a.btn.btn-default.pull-right#aCollapseAll 모두닫기
+      a.btn.btn-default.pull-right#aExpendAll 모두열기
 
   style.
+    a.btn.btn-default.pull-right { margin-right: 0.5em; }
+
     div.panel { margin-bottom: 10px; }
     h2.panel-heading {
       margin-top: 0;
       margin-bottom: 0;
-      padding-left: 5px;
-      padding-right: 5px;
       padding-top: 5px;
       padding-bottom: 5px;
     }
@@ -271,4 +273,18 @@ block content
       e.preventDefault();
     });
 
-    document.addEventListener("DOMContentLoaded", ()=>reload_page() );
+    document.addEventListener("DOMContentLoaded", ()=> {
+      document.getElementById('aCollapseAll').addEventListener('click', ( e => {
+        e.preventDefault();
+        [].map.call( document.querySelectorAll('h2.panel-heading:not(.collapsed)'), el => {
+          el.click();
+        });
+      }));
+      document.getElementById('aExpendAll').addEventListener('click', ( e => {
+        e.preventDefault();
+        [].map.call( document.querySelectorAll('h2.panel-heading.collapsed'), el => {
+          el.click();
+        });
+      }));
+      reload_page();
+    });
