@@ -35,7 +35,7 @@ function get_sql_yearly ( year=0 ) {//{{{
       d, product, action, SUM(tot) pv, SUM(uni) uv
 		FROM prd_daily_stat 
 		WHERE d BETWEEN ? - INTERVAL ${year} YEAR AND ? - INTERVAL ${year} YEAR
-      AND product IN ('player','audio')
+      /* AND product IN ('player','audio') */
 		GROUP BY d, product, action`;
 }//}}}
 

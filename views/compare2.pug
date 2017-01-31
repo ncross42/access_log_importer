@@ -59,6 +59,132 @@ block content
       tbody
     div#chart_audio
 
+  div#div_tv
+    h2 곰오디오
+    table.table.table-bordered.table-hover.summary
+      thead
+        tr
+          th 년도
+          th 일평균 다운로드
+          th 일평균 삭제
+          th 삭제율
+          th 기간누적 다운로드
+          th 기간누적 삭제
+      tbody
+    div#chart_tv
+
+  div#div_pack
+    h2 곰오디오
+    table.table.table-bordered.table-hover.summary
+      thead
+        tr
+          th 년도
+          th 일평균 다운로드
+          th 일평균 삭제
+          th 삭제율
+          th 기간누적 다운로드
+          th 기간누적 삭제
+      tbody
+    div#chart_pack
+
+  div#div_recoder
+    h2 곰오디오
+    table.table.table-bordered.table-hover.summary
+      thead
+        tr
+          th 년도
+          th 일평균 다운로드
+          th 일평균 삭제
+          th 삭제율
+          th 기간누적 다운로드
+          th 기간누적 삭제
+      tbody
+    div#chart_recoder
+
+  div#div_encoder
+    h2 곰오디오
+    table.table.table-bordered.table-hover.summary
+      thead
+        tr
+          th 년도
+          th 일평균 다운로드
+          th 일평균 삭제
+          th 삭제율
+          th 기간누적 다운로드
+          th 기간누적 삭제
+      tbody
+    div#chart_encoder
+
+  div#div_studio
+    h2 곰오디오
+    table.table.table-bordered.table-hover.summary
+      thead
+        tr
+          th 년도
+          th 일평균 다운로드
+          th 일평균 삭제
+          th 삭제율
+          th 기간누적 다운로드
+          th 기간누적 삭제
+      tbody
+    div#chart_studio
+
+  div#div_mix
+    h2 곰오디오
+    table.table.table-bordered.table-hover.summary
+      thead
+        tr
+          th 년도
+          th 일평균 다운로드
+          th 일평균 삭제
+          th 삭제율
+          th 기간누적 다운로드
+          th 기간누적 삭제
+      tbody
+    div#chart_mix
+
+  div#div_anti
+    h2 곰오디오
+    table.table.table-bordered.table-hover.summary
+      thead
+        tr
+          th 년도
+          th 일평균 다운로드
+          th 일평균 삭제
+          th 삭제율
+          th 기간누적 다운로드
+          th 기간누적 삭제
+      tbody
+    div#chart_anti
+
+  div#div_bridge
+    h2 곰오디오
+    table.table.table-bordered.table-hover.summary
+      thead
+        tr
+          th 년도
+          th 일평균 다운로드
+          th 일평균 삭제
+          th 삭제율
+          th 기간누적 다운로드
+          th 기간누적 삭제
+      tbody
+    div#chart_bridge
+
+  div#div_helper
+    h2 곰오디오
+    table.table.table-bordered.table-hover.summary
+      thead
+        tr
+          th 년도
+          th 일평균 다운로드
+          th 일평균 삭제
+          th 삭제율
+          th 기간누적 다운로드
+          th 기간누적 삭제
+      tbody
+    div#chart_helper
+
   script.
     function reload_chart(product,x_categories, series) {
       let options = {
@@ -104,11 +230,15 @@ block content
       fetch(url).then(r => r.json())
         .then(data => {
           for ( let [product, series] of Object.entries(data.prod_series) ) {
-            reload_chart(product,data.x_categories,series);
+            if ( document.querySelector('#div_'+product) ) {
+              reload_chart(product,data.x_categories,series);
+            }
           }
           const date_len = data.x_categories.length;
           for ( let [product, summary] of Object.entries(data.prod_summary) ) {
-            reload_table(product, date_len, summary);
+            if ( document.querySelector('#div_'+product) ) {
+              reload_table(product, date_len, summary);
+            }
           }
         })
         .catch(e => console.log("Booo"));
