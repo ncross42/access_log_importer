@@ -225,10 +225,7 @@ block content
         2015: { download: 1352850, uninstall: 50678 },
         2016: { download: 1277316, uninstall: 46763 }
       },
-      audio: {
-        2015: { download: 178187, uninstall: 25955 },
-        2016: { download: 162452, uninstall: 20701 } 
-      }
+      audio: { ...  }
     } */
     function reload_table(product, date_len, summary ) {
       let $tbody = document.querySelector('#div_'+product+' tbody');
@@ -236,8 +233,8 @@ block content
       let html = '';
       for ( let [year, stats] of Object.entries(summary) ) {
         html += '<tr><td>'+year+'</td>';
-        html += '<td>'+(stats.download||0/date_len).toLocaleString('arab',{maximumFractionDigits:1})+'</td>';
-        html += '<td>'+(stats.uninstall||0/date_len).toLocaleString('arab',{maximumFractionDigits:1})+'</td>';
+        html += '<td>'+((stats.download||0)/date_len).toLocaleString('arab',{maximumFractionDigits:0})+'</td>';
+        html += '<td>'+((stats.uninstall||0)/date_len).toLocaleString('arab',{maximumFractionDigits:0})+'</td>';
         html += '<td>'+(100*(stats.uninstall||0)/(stats.download||0)).toLocaleString('arab',{maximumFractionDigits:1})+'</td>';
         html += '<td>'+(stats.download||0).toLocaleString()+'</td>';
         html += '<td>'+(stats.uninstall||0).toLocaleString()+'</td>';
@@ -276,13 +273,13 @@ block content
     document.addEventListener("DOMContentLoaded", ()=> {
       document.getElementById('aCollapseAll').addEventListener('click', ( e => {
         e.preventDefault();
-        [].map.call( document.querySelectorAll('h2.panel-heading:not(.collapsed)'), el => {
+        document.querySelectorAll('h2.panel-heading:not(.collapsed)').forEach( el => {
           el.click();
         });
       }));
       document.getElementById('aExpendAll').addEventListener('click', ( e => {
         e.preventDefault();
-        [].map.call( document.querySelectorAll('h2.panel-heading.collapsed'), el => {
+        document.querySelectorAll('h2.panel-heading.collapsed').forEach( el => {
           el.click();
         });
       }));
