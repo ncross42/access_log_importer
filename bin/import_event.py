@@ -23,7 +23,7 @@ config = {
   #'use_pure': False,
 }
 
-TABLE = 'access_logs_archive'
+TABLE = 'access_event_archive'
 
 with open(BIN_PATH+'../config/default.json') as default_file:    
   default = json.load(default_file)
@@ -63,7 +63,7 @@ pat = re.compile( '([(\d\.)]+) - - \[(.*?)\] "([^\s]*?) ([^\s]*?)( [^\s]*?)?" (\
 pat2 = re.compile( '(gom[^ ;]+)', re.IGNORECASE )
 pat3 = re.compile( '(?:\(compatible; MSIE 6\.0; Windows NT 5\.1; SV1(?:; http:\/\/bsalsa\.com)?\))', re.IGNORECASE )
 
-def analyze (line, host):
+def analyze (host,line):
   global pat, sql_insert, cursor, gi, logging
   found = pat.findall(line)
   #print found
@@ -137,7 +137,7 @@ delta = today - startday
 
 for d in [startday + timedelta(days=x) for x in range(0,delta.days)] :
   ymd = d.strftime('%y%m%d')
-  file_pattern = '/data/prdlog/' + ymd + '/*'
+
   sql="SELECT 1 FROM information_schema.PARTITIONS WHERE TABLE_SCHEMA=%s AND TABLE_NAME=%s AND PARTITION_NAME=%s";
   try :
     cursor.execute(sql, (config['database'],TABLE,'p'+ymd) )
@@ -149,28 +149,28 @@ for d in [startday + timedelta(days=x) for x in range(0,delta.days)] :
     print(err)
     exit(1)
 
-  logging.basicConfig(filename=BIN_PATH+'log.import_db.'+today.strftime('%y%m%d')+'.'+ymd,level=logging.DEBUG)
+  logging.basicConfig(filename=BIN_PATH+'log.import_download.'+today.strftime('%y%m%d')+'.'+ymd,level=logging.DEBUG)
 
+  file_pattern = '/data/log/log.gomlab.com/*' + ymd + '.access_log.log.gomlab.com'
   for onefile in sorted(glob.glob(file_pattern)) :
-    basename = onefile[ 1+onefile.rfind('/') : -3 ]
-    host = basename[: basename.find('-') ]
-    workfile = '/mnt/RAMDISK/'+basename
-    os.system( "gzip -dc "+onefile+" > " + workfile )  
-    #print (workfile,basename,host)
-    with open(workfile, 'r+') as f:
-      logging.info('start: ' + basename)
+    filename = os.path.basename(onefile)
+    host = filename[: filename.find('.2017') ]
+    with open(onefile, 'r+') as f:
+      print 'start: ' + filename
+      logging.info('start: ' + filename)
       i = 0
-      ts_start = datetime.now()
+      ts_tmp = ts_start = datetime.now()
       for line in f:
-        #print line
-        analyze (line,host)
+        analyze (host,line)
         i+=1
-        #if 0 == (i % 10000) :
-        #  print i
-      log = "end: %s\t%d\t%s" % (basename, i, str(datetime.now()-ts_start) )
+        if 0 == (i % 100000) :
+          print "{:,}".format(i), "\t", str(datetime.now()-ts_tmp)
+          ts_tmp = datetime.now()
+      log = "end: %s\t%d\t%s" % (filename, i, str(datetime.now()-ts_start) )
       print log
       logging.info(log)
-    os.system( "rm -f " + workfile )  
+    # end with open
+    os.system( "gzip "+onefile )  
 
 cursor.close()
 cnx.close()

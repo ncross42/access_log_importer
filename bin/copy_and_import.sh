@@ -37,4 +37,6 @@ do
   DIFF=$(( $DIFF - 1 ))
 done
 
-$BIN_PATH/import_db.py > $BIN_PATH/import_db.log.$TODAY
+$BIN_PATH/import_download.py > $BIN_PATH/log.import_download.$TODAY
+
+$BIN_PATH/stat_download.py > $BIN_PATH/log.stat_download.$TODAY

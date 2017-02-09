@@ -31,7 +31,7 @@ config = {
   #'use_pure': False,
 }
 
-tableLog = 'access_logs_archive'
+tableLog = 'access_download_archive'
 tableStat = 'prd_daily_stat'
 
 with open(BIN_PATH+'../config/default.json') as default_file:    
@@ -54,29 +54,15 @@ except mysql.connector.Error as err:
     print(err)
     exit(1)
 
-def get_stat(ymd, pat) :
-  sql='''SELECT 
-      cc2, COUNT(1) tot, COUNT(DISTINCT ip) uni 
+def normalize_stat (ymd, prod, pat) :
+  sql='''
+  INSERT INTO %s ( d, product, action, cc2, tot, uni )
+  SELECT '%s', '%s', 'download', cc2, COUNT(1) tot, COUNT(DISTINCT ip) uni 
     FROM %s partition(p%s)
     WHERE req_base LIKE '%s' 
-    GROUP BY 1''' % (tableLog, ymd, pat)
+    GROUP BY cc2''' % (tableStat, ymd, prod, tableLog, ymd, pat)
   try :
     cursor.execute(sql)
-    return cursor.fetchall()
-  except mysql.connector.Error as err:
-    print(err)
-    exit(1)
-
-def set_stat (ymd, prod, stat):
-  sql='''INSERT INTO %s
-    ( d, product, action, cc2, tot, uni )
-    VALUES
-    ( '%s', '%s', 'download', %%s, %%s, %%s )''' % ( tableStat, ymd, prod )
-  try :
-    cursor.execute('LOCK TABLE '+tableStat+' WRITE')
-    for (cc2,tot,uni) in stat :
-      cursor.execute(sql, (cc2,tot,uni) )
-    cursor.execute('UNLOCK TABLES')
   except mysql.connector.Error as err:
     log1.error( pformat([err,sql], indent=4) )
 
@@ -113,10 +99,8 @@ if __name__ == "__main__":
     print ymd
     for prod in prod_pattern :
       ts_start = datetime.now()
-      stat = get_stat ( ymd, prod_pattern[prod] )
-      #pprint( [prod,stat] )
-      set_stat ( ymd, prod, stat )
-      log = "end: %s\t%d\t%s" % (prod, len(stat), str(datetime.now()-ts_start) )
+      normalize_stat ( ymd, prod, prod_pattern[prod] )
+      log = "end: %s\t%s" % (prod, str(datetime.now()-ts_start) )
       print log
 
 cursor.close()
