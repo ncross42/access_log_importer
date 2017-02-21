@@ -82,6 +82,34 @@ block content
       tbody
     div.collapse.in#chart_audio
 
+  div.panel.panel-default#div_cam
+    h2.panel-heading(data-toggle="collapse",data-target="#chart_cam") 곰cam
+    table.table.table-bordered.table-hover.summary
+      thead
+        tr
+          th 년도
+          th 일평균 다운로드
+          th 일평균 삭제
+          th 삭제율
+          th 기간누적 다운로드
+          th 기간누적 삭제
+      tbody
+    div.collapse.in#chart_cam
+
+  div.panel.panel-default#div_studio
+    h2.panel-heading(data-toggle="collapse",data-target="#chart_studio") 곰studio
+    table.table.table-bordered.table-hover.summary
+      thead
+        tr
+          th 년도
+          th 일평균 다운로드
+          th 일평균 삭제
+          th 삭제율
+          th 기간누적 다운로드
+          th 기간누적 삭제
+      tbody
+    div.collapse.in#chart_studio
+
   div.panel.panel-default#div_tv
     h2.panel-heading(data-toggle="collapse",data-target="#chart_tv") 곰tv
     table.table.table-bordered.table-hover.summary
@@ -137,20 +165,6 @@ block content
           th 기간누적 삭제
       tbody
     div.collapse.in#chart_encoder
-
-  div.panel.panel-default#div_studio
-    h2.panel-heading(data-toggle="collapse",data-target="#chart_studio") 곰studio
-    table.table.table-bordered.table-hover.summary
-      thead
-        tr
-          th 년도
-          th 일평균 다운로드
-          th 일평균 삭제
-          th 삭제율
-          th 기간누적 다운로드
-          th 기간누적 삭제
-      tbody
-    div.collapse.in#chart_studio
 
   div.panel.panel-default#div_mix
     h2.panel-heading(data-toggle="collapse",data-target="#chart_mix") 곰mix
