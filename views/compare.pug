@@ -7,7 +7,7 @@ block content
   div.well.well-sm
     form.form-inline(name="formCompare", method="get")
       //div.form-group.well.well-sm
-         label.radio-inline
+        label.radio-inline
           input(type="radio",name="basis",value="daily",checked=basis=="daily")
           | 일간
         label.radio-inline
@@ -22,22 +22,42 @@ block content
         span(style={'padding-left':'10px','padding-right':'10px','font-size':'1.0em','font-weight':'bold'}) ~
         input(id="textEnd",type="date", name="end", style={'width':'140px'}, value=end)
       input.btn.btn-default(id="btnSubmit", type="button", value="검색",style={'margin-left':'10px'})
+      a.btn.btn-default.pull-right#aCollapseAll 모두닫기
+      a.btn.btn-default.pull-right#aExpendAll 모두열기
 
   style.
-    #tableSummary th {
+    a.btn.btn-default.pull-right { margin-right: 0.5em; }
+
+    div.panel { margin-bottom: 10px; }
+    h2.panel-heading {
+      margin-top: 0;
+      margin-bottom: 0;
+      padding-top: 5px;
+      padding-bottom: 5px;
+    }
+    h2.panel-heading:hover {
+      cursor: pointer;
+    }
+    h2.panel-heading:hover span {
+      text-decoration: underline;
+    }
+    h2.panel-heading:before {
+      font-family:'Glyphicons Halflings';
+    }
+    h2.panel-heading:before  { content:"\e114"; }
+    h2.panel-heading.collapsed:before { content:"\e080"; }
+
+    .summary th {
       text-align: center;
     }
-    #tableSummary td {
+    .summary td {
       text-align: right;
     }
 
-  div.container
-    table.table.table-bordered.table-hover(id="tableSummary")
+  div.panel.panel-default#div_player
+    h2.panel-heading(data-toggle="collapse",data-target="#chart_player") 곰player
+    table.table.table-bordered.table-hover.summary
       thead
-        tr
-          th
-          th(colspan=5) 곰플레이어
-          th(colspan=5) 곰오디오
         tr
           th 년도
           th 일평균 다운로드
@@ -45,53 +65,193 @@ block content
           th 삭제율
           th 기간누적 다운로드
           th 기간누적 삭제
+      tbody
+    div.collapse.in#chart_player
+
+  div.panel.panel-default#div_audio
+    h2.panel-heading(data-toggle="collapse",data-target="#chart_audio") 곰audio
+    table.table.table-bordered.table-hover.summary
+      thead
+        tr
+          th 년도
           th 일평균 다운로드
           th 일평균 삭제
           th 삭제율
-          th 누적 다운로드
-          th 누적 삭제
+          th 기간누적 다운로드
+          th 기간누적 삭제
       tbody
+    div.collapse.in#chart_audio
 
+  div.panel.panel-default#div_cam
+    h2.panel-heading(data-toggle="collapse",data-target="#chart_cam") 곰cam
+    table.table.table-bordered.table-hover.summary
+      thead
+        tr
+          th 년도
+          th 일평균 다운로드
+          th 일평균 삭제
+          th 삭제율
+          th 기간누적 다운로드
+          th 기간누적 삭제
+      tbody
+    div.collapse.in#chart_cam
 
-  div#container(style={width:'100%', height:'400px'}) div#container
+  div.panel.panel-default#div_studio
+    h2.panel-heading(data-toggle="collapse",data-target="#chart_studio") 곰studio
+    table.table.table-bordered.table-hover.summary
+      thead
+        tr
+          th 년도
+          th 일평균 다운로드
+          th 일평균 삭제
+          th 삭제율
+          th 기간누적 다운로드
+          th 기간누적 삭제
+      tbody
+    div.collapse.in#chart_studio
+
+  div.panel.panel-default#div_tv
+    h2.panel-heading(data-toggle="collapse",data-target="#chart_tv") 곰tv
+    table.table.table-bordered.table-hover.summary
+      thead
+        tr
+          th 년도
+          th 일평균 다운로드
+          th 일평균 삭제
+          th 삭제율
+          th 기간누적 다운로드
+          th 기간누적 삭제
+      tbody
+    div.collapse.in#chart_tv
+
+  div.panel.panel-default#div_pack
+    h2.panel-heading(data-toggle="collapse",data-target="#chart_pack") 곰pack
+    table.table.table-bordered.table-hover.summary
+      thead
+        tr
+          th 년도
+          th 일평균 다운로드
+          th 일평균 삭제
+          th 삭제율
+          th 기간누적 다운로드
+          th 기간누적 삭제
+      tbody
+    div.collapse.in#chart_pack
+
+  div.panel.panel-default#div_recoder
+    h2.panel-heading(data-toggle="collapse",data-target="#chart_recoder") 곰recoder
+    table.table.table-bordered.table-hover.summary
+      thead
+        tr
+          th 년도
+          th 일평균 다운로드
+          th 일평균 삭제
+          th 삭제율
+          th 기간누적 다운로드
+          th 기간누적 삭제
+      tbody
+    div.collapse.in#chart_recoder
+
+  div.panel.panel-default#div_encoder
+    h2.panel-heading(data-toggle="collapse",data-target="#chart_encoder") 곰encoder
+    table.table.table-bordered.table-hover.summary
+      thead
+        tr
+          th 년도
+          th 일평균 다운로드
+          th 일평균 삭제
+          th 삭제율
+          th 기간누적 다운로드
+          th 기간누적 삭제
+      tbody
+    div.collapse.in#chart_encoder
+
+  div.panel.panel-default#div_mix
+    h2.panel-heading(data-toggle="collapse",data-target="#chart_mix") 곰mix
+    table.table.table-bordered.table-hover.summary
+      thead
+        tr
+          th 년도
+          th 일평균 다운로드
+          th 일평균 삭제
+          th 삭제율
+          th 기간누적 다운로드
+          th 기간누적 삭제
+      tbody
+    div.collapse.in#chart_mix
+
+  div.panel.panel-default#div_anti
+    h2.panel-heading(data-toggle="collapse",data-target="#chart_anti") 곰anti
+    table.table.table-bordered.table-hover.summary
+      thead
+        tr
+          th 년도
+          th 일평균 다운로드
+          th 일평균 삭제
+          th 삭제율
+          th 기간누적 다운로드
+          th 기간누적 삭제
+      tbody
+    div.collapse.in#chart_anti
+
+  div.panel.panel-default#div_bridge
+    h2.panel-heading(data-toggle="collapse",data-target="#chart_bridge") 곰bridge
+    table.table.table-bordered.table-hover.summary
+      thead
+        tr
+          th 년도
+          th 일평균 다운로드
+          th 일평균 삭제
+          th 삭제율
+          th 기간누적 다운로드
+          th 기간누적 삭제
+      tbody
+    div.collapse.in#chart_bridge
+
+  div.panel.panel-default#div_helper
+    h2.panel-heading(data-toggle="collapse",data-target="#chart_helper") 곰helper
+    table.table.table-bordered.table-hover.summary
+      thead
+        tr
+          th 년도
+          th 일평균 다운로드
+          th 일평균 삭제
+          th 삭제율
+          th 기간누적 다운로드
+          th 기간누적 삭제
+      tbody
+    div.collapse.in#chart_helper
 
   script.
-    function reload_chart(data) {
+    function reload_chart(product,x_categories, series) {
       let options = {
-        chart: { renderTo: 'container', type: 'spline' },
-        title: { text: '#{title} 표' },
-        xAxis: { title: { text: '기간' }, categories: data.x_categories },
+        chart: { renderTo: 'chart_'+product, type: 'spline' },
+        title: { text: '곰'+product+' 연간 비교표' },
+        xAxis: { title: { text: '기간' }, categories: x_categories },
         yAxis: { title: { text: 'Fruit eaten' }, },
-        series: data.series
+        series: series
       };
       new Highcharts.Chart(options);
     }
 
-    /* summary = { 
-    '2016': { 
-      player: { download: 757217, uninstall: 57915 },
-      audio: { download: 161602, uninstall: 20733 } }
-    }, { '2015': { 
-      player: { download: 1314783, uninstall: 50606 }, 
-      audio: { download: 178346, uninstall: 25651 } 
-    }, '2016': { 
-      player: { download: 757217, uninstall: 57915 },
-      audio: { download: 161602, uninstall: 20733 } }
-    }; */
-    function reload_table(data) {
-      const date_len = data.x_categories.length;
-      let $tbody = document.querySelector('#tableSummary tbody');
+    /* summary = {
+      player: {
+        2015: { download: 1352850, uninstall: 50678 },
+        2016: { download: 1277316, uninstall: 46763 }
+      },
+      audio: { ...  }
+    } */
+    function reload_table(product, date_len, summary ) {
+      let $tbody = document.querySelector('#div_'+product+' tbody');
       $tbody.innerHTML = null;  // reset
-      html = '';
-      for ( let [year, detail] of Object.entries(data.summary) ) {
+      let html = '';
+      for ( let [year, stats] of Object.entries(summary) ) {
         html += '<tr><td>'+year+'</td>';
-        for ( let [product, stats] of Object.entries(detail) ) {
-          html += '<td>'+(stats.download/date_len).toLocaleString('arab',{maximumFractionDigits:1})+'</td>';
-          html += '<td>'+(stats.uninstall/date_len).toLocaleString('arab',{maximumFractionDigits:1})+'</td>';
-          html += '<td>'+(100*stats.uninstall/stats.download).toLocaleString('arab',{maximumFractionDigits:1})+'</td>';
-          html += '<td>'+(stats.download).toLocaleString()+'</td>';
-          html += '<td>'+(stats.uninstall).toLocaleString()+'</td>';
-        }
+        html += '<td>'+((stats.download||0)/date_len).toLocaleString('arab',{maximumFractionDigits:0})+'</td>';
+        html += '<td>'+((stats.uninstall||0)/date_len).toLocaleString('arab',{maximumFractionDigits:0})+'</td>';
+        html += '<td>'+(100*(stats.uninstall||0)/(stats.download||0)).toLocaleString('arab',{maximumFractionDigits:1})+'</td>';
+        html += '<td>'+(stats.download||0).toLocaleString()+'</td>';
+        html += '<td>'+(stats.uninstall||0).toLocaleString()+'</td>';
         html += '</tr>';
       }
       $tbody.insertAdjacentHTML('afterbegin', html);
@@ -103,8 +263,17 @@ block content
       const url = '/compare/data/daily/'+start+'/'+end;
       fetch(url).then(r => r.json())
         .then(data => {
-          reload_chart(data);
-          reload_table(data);
+          for ( let [product, series] of Object.entries(data.prod_series) ) {
+            if ( document.querySelector('#div_'+product) ) {
+              reload_chart(product,data.x_categories,Object.values(series));
+            }
+          }
+          const date_len = data.x_categories.length;
+          for ( let [product, summary] of Object.entries(data.prod_summary) ) {
+            if ( document.querySelector('#div_'+product) ) {
+              reload_table(product, date_len, summary);
+            }
+          }
         })
         .catch(e => console.log("Booo"));
     }
@@ -115,4 +284,18 @@ block content
       e.preventDefault();
     });
 
-    document.addEventListener("DOMContentLoaded", ()=>reload_page() );
+    document.addEventListener("DOMContentLoaded", ()=> {
+      document.getElementById('aCollapseAll').addEventListener('click', ( e => {
+        e.preventDefault();
+        document.querySelectorAll('h2.panel-heading:not(.collapsed)').forEach( el => {
+          el.click();
+        });
+      }));
+      document.getElementById('aExpendAll').addEventListener('click', ( e => {
+        e.preventDefault();
+        document.querySelectorAll('h2.panel-heading.collapsed').forEach( el => {
+          el.click();
+        });
+      }));
+      reload_page();
+    });

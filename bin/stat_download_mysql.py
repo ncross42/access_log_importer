@@ -34,7 +34,7 @@ config = {
 tableLog = 'access_download_archive'
 tableStat = 'prd_daily_stat'
 
-with open(BIN_PATH+'../config/default.json') as default_file:    
+with open(BIN_PATH+'../config/tf.json') as default_file:    
   default = json.load(default_file)
 
 try:
@@ -64,7 +64,7 @@ def normalize_stat (ymd, prod, pat) :
   try :
     cursor.execute(sql)
   except mysql.connector.Error as err:
-    log1.error( pformat([err,sql], indent=4) )
+    log_batch.error( pformat([err,sql], indent=4) )
 
 prod_pattern = {# {{{
   'player'  : '%gomplayer%.exe',
@@ -84,10 +84,11 @@ prod_pattern = {# {{{
 
 if __name__ == "__main__":
   today = date.today()
-  setup_logger('log1', BIN_PATH+'log.stat_download.'+today.strftime('%y%m%d') )
-  #setup_logger('log2', BIN_PATH+'log.stat_download.'+today.strftime('%y%m%d') )
-  log1 = logging.getLogger('log1')
-  #log2 = logging.getLogger('log2')
+  today_ymd = today.strftime('%y%m%d')
+  filename = os.path.basename(__file__)
+  log_file = BIN_PATH + "log/%s.%s"%(filename[:filename.rfind('.')],today_ymd)
+  setup_logger('log_batch', log_file )
+  log_batch = logging.getLogger('log_batch')
 
   startday = today - timedelta(days=1)
   if 1 < len(sys.argv) :

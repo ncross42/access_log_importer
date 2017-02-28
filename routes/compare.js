@@ -35,7 +35,7 @@ function get_sql_yearly ( year=0 ) {//{{{
       d, product, action, SUM(tot) pv, SUM(uni) uv
 		FROM prd_daily_stat 
 		WHERE d BETWEEN ? - INTERVAL ${year} YEAR AND ? - INTERVAL ${year} YEAR
-      AND product IN ('player','audio')
+      /* AND product IN ('player','audio') */
 		GROUP BY d, product, action`;
 }//}}}
 
@@ -65,12 +65,13 @@ router.get(['/data','/data/:basis/:start/:end'], function(req, res, next) {
   // xAxis.categories = [/*'12-30','12-31','01-01','01-02'*/];
   const date_list = getDates( new Date(start), new Date(end) ); 
 // console.log( date_list );
-  var series_keys = []; /*'2017-player-download', ... , '2016-audio-install'*/
-  var series = [];
-   /*{ name: '2017-player-download', data: [7.0, 6.9, 9.5, 14.5] },
-          { name: '2016-player-download', data: [-0.2, 0.8, 5.7, 11.3] },
-     { name: '2017-audio-install', data: [-0.9, 0.6, 3.5, 8.4] }, 
-     { name: '2016-audio-install', data: [3.9, 4.2, 5.7, 8.5] }*/
+  var series = {};
+   /*{ player : [
+         { name: '2017-download', data: [7.0, 6.9, 9.5, 14.5] },
+         { name: '2016-download', data: [-0.2, 0.8, 5.7, 11.3] }
+       ],
+       audio : [ {name: '2017-download', data: [0,1, ...] }, {...} ]
+     }; */
 
   var summary = {};
     /*'2017' : {
@@ -97,37 +98,35 @@ router.get(['/data','/data/:basis/:start/:end'], function(req, res, next) {
           return;
         }
 
+        if ( ! series[r.product] ) series[r.product] = {};
+
         const year = r.d.substr(0,4);
-        const series_name = year+'-'+r.product+'-'+r.action;
-        var s_key = series_keys.indexOf(series_name);
-        if ( s_key == -1 ) {
-          series.push({
-            'name' : series_name,
-            'data' : Array(date_list.length).fill(0)
-          });
-          s_key = series.length - 1;
-          series_keys.push(series_name);
+        const series_name = year+'-'+r.action;
+        if ( ! series[r.product][series_name] ) {
+          series[r.product][series_name] = {
+            name : series_name,
+            data : Array(date_list.length).fill(0)
+          };
         }
 
         // for graph
-        series[s_key].data[d_key] = r.pv;
+        series[r.product][series_name].data[d_key] = r.pv;
 
         // for summary
-        if ( ! summary[year] ) summary[year] = {};
-        if ( ! summary[year][r.product] ) summary[year][r.product] = {};
-        if ( ! summary[year][r.product][r.action] ) summary[year][r.product][r.action] = 0;
-        summary[year][r.product][r.action] += r.pv;
-      });
+        if ( ! summary[r.product] ) summary[r.product] = {};
+        if ( ! summary[r.product][year] ) summary[r.product][year] = {};
+        if ( ! summary[r.product][year][r.action] ) summary[r.product][year][r.action] = 0;
+        summary[r.product][year][r.action] += r.pv;
+      }); // End of rows.forEach
 
 // console.log(summary);
 
       tasksToGo--;
       if ( ! tasksToGo ) {
-// console.log( series_keys );
         res.json( {
           'x_categories' : date_list,
-          'series' : series,
-          'summary' : summary
+          'prod_series' : series,
+          'prod_summary' : summary
         });
       }
     });

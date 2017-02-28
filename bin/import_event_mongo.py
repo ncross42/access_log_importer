@@ -71,21 +71,21 @@ def analyze (host,line):# {{{
   else :
     dt_seq += 1
 
-  dic_inf = { 
-    'measurement': '_'.join( (TABLE, 'player' if req_dir=='/player' else 'etc', dt.strftime('%y%m%d')) ),
-    'tags': { },
-    'time': int( (dt+timedelta(hours=9)).strftime('%s') + "%03d%03d"%(dt_seq,int(host[host.rfind('.')+1:])) ), # force revert KST->UTC
-    'fields': dic_mongo
-  }
-  if req_dir :
-    if req_dir == '/player' :
-      dic_inf['fields']['req_dir'] = req_dir
-    else :
-      dic_inf['tags']['req_dir'] = req_dir
-  if req_base :
-    dic_inf['tags']['req_base'] = req_base
-  if cc2 :
-    dic_inf['tags']['cc2'] = cc2
+  #dic_inf = { 
+  #  'measurement': '_'.join( (TABLE, 'player' if req_dir=='/player' else 'etc', dt.strftime('%y%m%d')) ),
+  #  'tags': { },
+  #  'time': int( (dt+timedelta(hours=9)).strftime('%s') + "%03d%03d"%(dt_seq,int(host[host.rfind('.')+1:])) ), # force revert KST->UTC
+  #  'fields': dic_mongo
+  #}
+  #if req_dir :
+  #  if req_dir == '/player' :
+  #    dic_inf['fields']['req_dir'] = req_dir
+  #  else :
+  #    dic_inf['tags']['req_dir'] = req_dir
+  #if req_base :
+  #  dic_inf['tags']['req_base'] = req_base
+  #if cc2 :
+  #  dic_inf['tags']['cc2'] = cc2
 
   dic_mongo.update( {
     'dt'       : dt,
@@ -97,15 +97,15 @@ def analyze (host,line):# {{{
   if req_query :
     dic_query = dict( ( k.replace('.','_'), v if type(v)==str else v[0] ) for k, v in urlparse.parse_qs(req_query).iteritems() )
     dic_mongo.update( dic_query )
-    dic_inf['fields'].update( dic_query )
+    #dic_inf['fields'].update( dic_query )
 
-  line = "%s,%s %s %s\n"% ( 
-    dic_inf['measurement'], 
-    ','.join( [ k+'='+str(v) for k, v in dic_inf['tags'].iteritems() ] ),
-    ','.join( [ k+'='+(str(v) if int==type(v) else '"'+str(v)+'"') for k, v in dic_inf['fields'].iteritems() ] ),
-    str(dic_inf['time'])+'000', 
-  )
-  influx_gz.write(line);
+  #line = "%s,%s %s %s\n"% ( 
+  #  dic_inf['measurement'], 
+  #  ','.join( [ k+'='+str(v) for k, v in dic_inf['tags'].iteritems() ] ),
+  #  ','.join( [ k+'='+(str(v) if int==type(v) else '"'+str(v)+'"') for k, v in dic_inf['fields'].iteritems() ] ),
+  #  str(dic_inf['time'])+'000', 
+  #)
+  #influx_gz.write(line);
 
   return dic_mongo
 # }}}
@@ -134,9 +134,9 @@ for d in [startday + timedelta(days=x) for x in range(0,delta.days)] :
   IDX_req_base = IndexModel([("req_dir", ASCENDING),("req_base", ASCENDING),("cc2", ASCENDING)], name="IDX_req_dir_base_cc2")
   events_etc.create_indexes ( [IDX_req_base] )
 
-  influx_file = BIN_PATH + "log/influx_event.%s.gz" % d_ymd
-  influx_gz = gzip.open(influx_file, 'wb')
-  influx_gz.write("# DDL\nCREATE DATABASE gomlog\n# DML\n# CONTEXT-DATABASE: gomlog\n")
+  #influx_file = BIN_PATH + "log/influx_event.%s.gz" % d_ymd
+  #influx_gz = gzip.open(influx_file, 'wb')
+  #influx_gz.write("# DDL\nCREATE DATABASE gomlog\n# DML\n# CONTEXT-DATABASE: gomlog\n")
 
   file_pattern = '/data/log/log.gomlab.com/*' + d_ymd + '.access_log.log.gomlab.com'
   for onefile in sorted(glob.glob(file_pattern)) :
@@ -184,9 +184,9 @@ for d in [startday + timedelta(days=x) for x in range(0,delta.days)] :
     os.system( "gzip "+onefile )  
 
   ## END : one day
-  influx_gz.close()
-  if 62 == os.path.getsize(influx_file) :
-    os.remove(influx_file)
+  #influx_gz.close()
+  #if 62 == os.path.getsize(influx_file) :
+  #  os.remove(influx_file)
   if 0 == os.path.getsize(log_daily_file) :
     os.remove(log_daily_file)
 

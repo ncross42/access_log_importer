@@ -18,11 +18,16 @@ mycon.connect(function(err) {
   }
 });
 
+//var auth = require('http-auth');
+//var basic = auth.basic({
+//  realm: "Simon Area.",
+//  file: __dirname + "./config/users.htpasswd"
+//});
+
 var index = require('./routes/index');
 var users = require('./routes/users');
 var summary = require('./routes/summary');
 var compare = require('./routes/compare');
-var compare2 = require('./routes/compare2');
 
 var app = express();
 
@@ -55,7 +60,6 @@ app.use('/', index);
 app.use('/users', users);
 app.use('/summary', summary);
 app.use('/compare', compare);
-app.use('/compare2', compare2);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

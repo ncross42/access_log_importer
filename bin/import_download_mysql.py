@@ -37,7 +37,7 @@ config = {
 
 TABLE = 'access_download_archive'
 
-with open(BIN_PATH+'../config/default.json') as default_file:    
+with open(BIN_PATH+'../config/tf.json') as default_file:    
   default = json.load(default_file)
 
 try:
