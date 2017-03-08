@@ -34,7 +34,7 @@ config = {
 tableLog = 'access_download_archive'
 tableStat = 'prd_daily_stat'
 
-with open(BIN_PATH+'../config/tf.json') as default_file:    
+with open(BIN_PATH+'../config/production.json') as default_file:    
   default = json.load(default_file)
 
 try:

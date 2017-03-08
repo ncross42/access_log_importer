@@ -81,7 +81,7 @@ for d in [startday + timedelta(days=x) for x in range(0,delta.days)] :
     #projection.update( prod_params[prod] )
 
     print match,projection
-    docs = events.find(match,projection).sort("dt",ASCENDING)
+    docs = events.find(match,projection) #.sort("dt",ASCENDING)
     for one in docs :
       #print json.dumps(one, default=json_util.default, cls=DatetimeEncoder)
       one['req_dir'] = prod
